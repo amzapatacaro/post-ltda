@@ -58,5 +58,42 @@ namespace Business
             entity.CustomerId = customerId;
             return _baseModel.Update(entity, original, out changed);
         }
+
+        public override Customer Delete(Customer entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var customer = _context.Customer.Find(entity.CustomerId);
+                    if (customer == null)
+                    {
+                        return null;
+                    }
+
+                    var posts = _context
+                        .Post.Where(p => p.CustomerId == entity.CustomerId)
+                        .ToList();
+
+                    if (posts.Count > 0)
+                    {
+                        _context.Post.RemoveRange(posts);
+                    }
+
+                    _context.Customer.Remove(customer);
+                    _context.SaveChanges();
+                    trx.Commit();
+                    return customer;
+                }
+                catch
+                {
+                    trx.Rollback();
+                    throw;
+                }
+            }
+        }
     }
 }
