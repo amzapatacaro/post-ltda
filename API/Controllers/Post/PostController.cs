@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using API.Models;
 using Business;
 using Microsoft.AspNetCore.Mvc;
 using PostEntity = DataAccess.Data.Post;
@@ -25,6 +26,16 @@ namespace API.Controllers.Post
         public PostEntity Create([FromBody] PostEntity entity)
         {
             return _postService.Create(entity);
+        }
+
+        [HttpPost("List")]
+        public IActionResult CreatePosts([FromBody] CreatePostsRequest request)
+        {
+            if (request?.Posts == null)
+                return BadRequest("Posts es obligatorio.");
+
+            var response = _postService.CreatePosts(request.Posts);
+            return Ok(response);
         }
 
         [HttpPut]

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Business.Helpers;
 using DataAccess;
@@ -19,6 +20,38 @@ namespace Business
 
         public override Post Create(Post entity)
         {
+            return CreateNewPost(entity);
+        }
+
+        public IReadOnlyList<Post> CreatePosts(IEnumerable<Post> posts)
+        {
+            if (posts == null)
+                throw new ArgumentNullException(nameof(posts));
+
+            var list = posts as IList<Post> ?? posts.ToList();
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var results = new List<Post>();
+                    foreach (var item in list)
+                    {
+                        results.Add(Create(item));
+                    }
+
+                    trx.Commit();
+                    return results;
+                }
+                catch
+                {
+                    trx.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        private Post CreateNewPost(Post entity)
+        {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
@@ -32,7 +65,7 @@ namespace Business
             entity.Body = PostHelper.NormalizeBody(entity.Body);
             entity.Category = PostHelper.ResolveCategory(entity.Type, entity.Category);
 
-            return base.Create(entity);
+            return _baseModel.Create(entity);
         }
     }
 }
