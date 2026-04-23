@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+using System;
 using Business;
+using Business.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using CustomerEntity = DataAccess.Data.Customer;
 
 namespace API.Controllers.Customer
 {
@@ -16,27 +16,45 @@ namespace API.Controllers.Customer
         }
 
         [HttpGet]
-        public IEnumerable<CustomerEntity> GetAll()
+        public IActionResult GetAll()
         {
-            return _customerService.GetAll();
+            return Ok(_customerService.GetAll());
         }
 
         [HttpPost]
-        public CustomerEntity Create([FromBody] CustomerEntity entity)
+        public IActionResult Create([FromBody] CustomerDto dto)
         {
-            return _customerService.Create(entity);
+            try
+            {
+                var created = _customerService.Create(dto);
+                return Ok(created);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (DuplicateCustomerNameException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         [HttpPut]
-        public CustomerEntity Update([FromBody] CustomerEntity entity)
+        public IActionResult Update([FromBody] CustomerDto dto)
         {
-            return _customerService.Update(entity.CustomerId, entity, out bool changed);
+            var updated = _customerService.Update(dto, out bool changed);
+            if (updated == null)
+                return NotFound(new { message = "Cliente no encontrado." });
+            return Ok(updated);
         }
 
         [HttpDelete]
-        public CustomerEntity Delete([FromBody] CustomerEntity entity)
+        public IActionResult Delete([FromBody] CustomerDto dto)
         {
-            return _customerService.Delete(entity);
+            var deleted = _customerService.Delete(dto);
+            if (deleted == null)
+                return NotFound(new { message = "Cliente no encontrado." });
+            return Ok(deleted);
         }
     }
 }

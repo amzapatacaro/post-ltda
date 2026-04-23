@@ -1,10 +1,14 @@
 using System.Collections.Generic;
-using DataAccess.Data;
+using Business.Dtos;
 
 namespace Business
 {
-    public interface IPostService : IBaseService<Post>
+    public interface IPostService
     {
-        IReadOnlyList<Post> CreatePosts(IEnumerable<Post> posts);
+        IEnumerable<PostDto> GetAll();
+        PostDto Create(PostDto dto);
+        IReadOnlyList<PostDto> CreatePosts(IEnumerable<PostDto> posts);
+        PostDto Update(PostDto dto, out bool changed);
+        PostDto Delete(PostDto dto);
     }
 }

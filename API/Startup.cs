@@ -1,10 +1,7 @@
 ﻿using Business;
-using DataAccess;
-using DataAccess.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
@@ -20,32 +17,12 @@ namespace ProjectAPI.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<JujuTestContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("Development"))
-            );
-
-            services.AddScoped<IBaseModel<Customer>>(sp => new BaseModel<Customer>(
-                sp.GetRequiredService<JujuTestContext>()
-            ));
-            services.AddScoped<IBaseModel<Post>>(sp => new BaseModel<Post>(
-                sp.GetRequiredService<JujuTestContext>()
-            ));
-
-            services.AddScoped<CustomerService>();
-            services.AddScoped<ICustomerService>(sp => sp.GetRequiredService<CustomerService>());
-            services.AddScoped<IBaseService<Customer>>(sp =>
-                sp.GetRequiredService<CustomerService>()
-            );
-            services.AddScoped<PostService>();
-            services.AddScoped<IPostService>(sp => sp.GetRequiredService<PostService>());
-            services.AddScoped<IBaseService<Post>>(sp => sp.GetRequiredService<PostService>());
+            services.AddPostLtdaPersistence(Configuration);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // ======== CONFIGURACIÓN DE SWAGGER =========
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "TestAPI", Version = "v1" });
@@ -54,7 +31,6 @@ namespace ProjectAPI.API
             services.AddSession();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -62,7 +38,6 @@ namespace ProjectAPI.API
                 app.UseDeveloperExceptionPage();
             }
 
-            // ======== CONFIGURACIÓN DE SWAGGER =========
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

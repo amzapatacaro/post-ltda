@@ -4,7 +4,7 @@ using DataAccess;
 
 namespace Business
 {
-    public class BaseService<TEntity> : IBaseService<TEntity> where TEntity : class, new()
+    public class BaseService<TEntity> where TEntity : class, new()
     {
         protected IBaseModel<TEntity> _baseModel;
 
@@ -54,14 +54,6 @@ namespace Business
         public virtual TEntity Delete(TEntity entity)
         {
             return _baseModel.Delete(entity);
-        }
-
-        /// <summary>
-        /// Persists pending changes.
-        /// </summary>
-        public virtual void SaveChanges()
-        {
-            _baseModel.SaveChanges();
         }
 
         #endregion

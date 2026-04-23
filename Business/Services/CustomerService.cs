@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Business.Dtos;
+using Business.Mapping;
 using DataAccess;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +19,9 @@ namespace Business
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public override IEnumerable<Customer> GetAll()
+        IEnumerable<CustomerDto> ICustomerService.GetAll()
         {
-            return _baseModel.GetAll.ToList();
+            return base.GetAll().Select(c => c.ToDto());
         }
 
         public override Customer Create(Customer entity)
@@ -42,6 +44,13 @@ namespace Business
             return base.Create(entity);
         }
 
+        public CustomerDto Create(CustomerDto dto)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+            return Create(dto.ToCustomer()).ToDto();
+        }
+
         public override Customer Update(object id, Customer entity, out bool changed)
         {
             if (entity == null)
@@ -57,6 +66,13 @@ namespace Business
             var customerId = id is int cid ? cid : Convert.ToInt32(id);
             entity.CustomerId = customerId;
             return _baseModel.Update(entity, original, out changed);
+        }
+
+        public CustomerDto Update(CustomerDto dto, out bool changed)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+            return Update(dto.CustomerId, dto.ToCustomer(), out changed).ToDto();
         }
 
         public override Customer Delete(Customer entity)
@@ -94,6 +110,13 @@ namespace Business
                     throw;
                 }
             }
+        }
+
+        public CustomerDto Delete(CustomerDto dto)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+            return Delete(dto.ToCustomer()).ToDto();
         }
     }
 }

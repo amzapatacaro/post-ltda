@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Business.Dtos;
 using Business.Helpers;
+using Business.Mapping;
 using DataAccess;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
@@ -18,22 +20,34 @@ namespace Business
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        IEnumerable<PostDto> IPostService.GetAll()
+        {
+            return base.GetAll().Select(p => p.ToDto());
+        }
+
         public override Post Create(Post entity)
         {
             return CreateNewPost(entity);
         }
 
-        public IReadOnlyList<Post> CreatePosts(IEnumerable<Post> posts)
+        public PostDto Create(PostDto dto)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+            return Create(dto.ToPost()).ToDto();
+        }
+
+        public IReadOnlyList<PostDto> CreatePosts(IEnumerable<PostDto> posts)
         {
             if (posts == null)
                 throw new ArgumentNullException(nameof(posts));
 
-            var list = posts as IList<Post> ?? posts.ToList();
+            var list = posts as IList<PostDto> ?? posts.ToList();
             using (var trx = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var results = new List<Post>();
+                    var results = new List<PostDto>();
                     foreach (var item in list)
                     {
                         results.Add(Create(item));
@@ -48,6 +62,20 @@ namespace Business
                     throw;
                 }
             }
+        }
+
+        public PostDto Update(PostDto dto, out bool changed)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+            return Update(dto.PostId, dto.ToPost(), out changed).ToDto();
+        }
+
+        public PostDto Delete(PostDto dto)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+            return Delete(dto.ToPost()).ToDto();
         }
 
         private Post CreateNewPost(Post entity)
