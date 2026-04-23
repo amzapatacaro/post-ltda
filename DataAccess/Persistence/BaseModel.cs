@@ -1,22 +1,23 @@
-﻿using DataAccess.Data;
+using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
+
 namespace DataAccess
 {
     public class BaseModel<TEntity> : IBaseModel<TEntity> where TEntity : class, new()
     {
         /// <summary>
-        /// Contexto
+        /// Database context.
         /// </summary>
         JujuTestContext _context;
+
         /// <summary>
-        /// Entidad
+        /// Entity set for this model.
         /// </summary>
         protected DbSet<TEntity> _dbSet;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the model.
         /// </summary>
         /// <param name="context"></param>
         public BaseModel(JujuTestContext context)
@@ -25,9 +26,8 @@ namespace DataAccess
             _dbSet = _context.Set<TEntity>();
         }
 
-
         /// <summary>
-        /// Consulta todas las entidades
+        /// Gets all entities as a queryable set.
         /// </summary>
         public virtual IQueryable<TEntity> GetAll
         {
@@ -35,7 +35,7 @@ namespace DataAccess
         }
 
         /// <summary>
-        /// Consulta una entidad por id
+        /// Gets an entity by primary key.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -44,10 +44,8 @@ namespace DataAccess
             return _dbSet.Find(id);
         }
 
-
-
         /// <summary>
-        /// Crea un entidad (Guarda)
+        /// Creates an entity and persists it.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -57,20 +55,17 @@ namespace DataAccess
             _context.SaveChanges();
 
             return entity;
-        }   
-
-     
+        }
 
         /// <summary>
-        /// Actualiza la entidad (GUARDA)
+        /// Updates the entity and persists it.
         /// </summary>
-        /// <param name="editedEntity">Entidad editada</param>
-        /// <param name="originalEntity">Entidad Original sin cambios</param>
-        /// <param name="changed">Indica si se modifico la entidad</param>
+        /// <param name="editedEntity">Edited entity.</param>
+        /// <param name="originalEntity">Original entity before changes.</param>
+        /// <param name="changed">Whether the entity was modified.</param>
         /// <returns></returns>
         public virtual TEntity Update(TEntity editedEntity, TEntity originalEntity, out bool changed)
         {
-
             _context.Entry(originalEntity).CurrentValues.SetValues(editedEntity);
 
             changed = _context.Entry(originalEntity).State == EntityState.Modified;
@@ -80,10 +75,8 @@ namespace DataAccess
             return originalEntity;
         }
 
-       
-
         /// <summary>
-        /// Elimina una entidad (Guarda)
+        /// Deletes an entity and persists it.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -96,9 +89,8 @@ namespace DataAccess
             return entity;
         }
 
-
         /// <summary>
-        /// Guardar cambios
+        /// Persists pending changes.
         /// </summary>
         public virtual void SaveChanges()
         {

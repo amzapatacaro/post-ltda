@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using DataAccess;
 
@@ -15,9 +15,8 @@ namespace Business
 
         #region Repository
 
-
         /// <summary>
-        /// Consulta todas las entidades
+        /// Gets all entities.
         /// </summary>
         public virtual IEnumerable<TEntity> GetAll()
         {
@@ -25,7 +24,7 @@ namespace Business
         }
 
         /// <summary>
-        /// Crea un entidad (Guarda)
+        /// Creates an entity and persists it.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -35,11 +34,11 @@ namespace Business
         }
 
         /// <summary>
-        /// Actualiza la entidad (GUARDA)
+        /// Updates the entity and persists it.
         /// </summary>
-        /// <param name="editedEntity">Entidad editada</param>
-        /// <param name="originalEntity">Entidad Original sin cambios</param>
-        /// <param name="changed">Indica si se modifico la entidad</param>
+        /// <param name="id">Primary key of the entity to update.</param>
+        /// <param name="editedEntity">Edited entity.</param>
+        /// <param name="changed">Whether the entity was modified.</param>
         /// <returns></returns>
         public virtual TEntity Update(object id, TEntity editedEntity, out bool changed)
         {
@@ -48,7 +47,7 @@ namespace Business
         }
 
         /// <summary>
-        /// Elimina una entidad (Guarda)
+        /// Deletes an entity and persists it.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -58,12 +57,13 @@ namespace Business
         }
 
         /// <summary>
-        /// Guardar cambios
+        /// Persists pending changes.
         /// </summary>
         public virtual void SaveChanges()
         {
             _baseModel.SaveChanges();
         }
+
         #endregion
     }
 }

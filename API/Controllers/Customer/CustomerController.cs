@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Business;
 using Microsoft.AspNetCore.Mvc;
 using CustomerEntity = DataAccess.Data.Customer;
