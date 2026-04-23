@@ -1,7 +1,7 @@
-﻿using Business;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Business;
+using Microsoft.AspNetCore.Mvc;
 using CustomerEntity = DataAccess.Data.Customer;
 
 namespace API.Controllers.Customer
@@ -9,42 +9,35 @@ namespace API.Controllers.Customer
     [Route("[controller]")]
     public class CustomerController : ControllerBase
     {
-        private BaseService<CustomerEntity> CustomerService;
+        private readonly BaseService<CustomerEntity> _customerService;
+
         public CustomerController(BaseService<CustomerEntity> customerService)
         {
-            CustomerService = customerService;
+            _customerService = customerService;
         }
 
-
-        [HttpGet()]
-        public IQueryable<CustomerEntity> GetAll()
+        [HttpGet]
+        public IEnumerable<CustomerEntity> GetAll()
         {
-            return CustomerService.GetAll();
+            return _customerService.GetAll().ToList();
         }
 
-
-        [HttpPost()]
-        public CustomerEntity Create([FromBodyAttribute] CustomerEntity entity)
+        [HttpPost]
+        public CustomerEntity Create([FromBody] CustomerEntity entity)
         {
-            return CreateCustomer(entity);
+            return _customerService.Create(entity);
         }
 
-        private CustomerEntity CreateCustomer(CustomerEntity entity)
+        [HttpPut]
+        public CustomerEntity Update([FromBody] CustomerEntity entity)
         {
-            throw new Exception("");
-            return CustomerService.Create(entity);
+            return _customerService.Update(entity.CustomerId, entity, out bool changed);
         }
 
-        [HttpPut()]
-        public CustomerEntity Update(CustomerEntity entity)
+        [HttpDelete]
+        public CustomerEntity Delete([FromBody] CustomerEntity entity)
         {
-            return CustomerService.Update(entity.CustomerId, entity, out bool changed);
-        }
-
-        [HttpDelete()]
-        public CustomerEntity Delete([FromBodyAttribute] CustomerEntity entity)
-        {
-            return CustomerService.Delete(entity);
+            return _customerService.Delete(entity);
         }
     }
 }
