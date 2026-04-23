@@ -27,17 +27,21 @@ namespace ProjectAPI.API
                 options.UseSqlServer(Configuration.GetConnectionString("Development"))
             );
 
-            services.AddScoped(sp => new BaseModel<Customer>(
+            services.AddScoped<IBaseModel<Customer>>(sp => new BaseModel<Customer>(
                 sp.GetRequiredService<JujuTestContext>()
             ));
-            services.AddScoped(sp => new BaseModel<Post>(sp.GetRequiredService<JujuTestContext>()));
+            services.AddScoped<IBaseModel<Post>>(sp => new BaseModel<Post>(
+                sp.GetRequiredService<JujuTestContext>()
+            ));
 
-            services.AddScoped(sp => new BaseService<Customer>(
-                sp.GetRequiredService<BaseModel<Customer>>()
-            ));
-            services.AddScoped(sp => new BaseService<Post>(
-                sp.GetRequiredService<BaseModel<Post>>()
-            ));
+            services.AddScoped<CustomerService>();
+            services.AddScoped<ICustomerService>(sp => sp.GetRequiredService<CustomerService>());
+            services.AddScoped<IBaseService<Customer>>(sp =>
+                sp.GetRequiredService<CustomerService>()
+            );
+            services.AddScoped<PostService>();
+            services.AddScoped<IPostService>(sp => sp.GetRequiredService<PostService>());
+            services.AddScoped<IBaseService<Post>>(sp => sp.GetRequiredService<PostService>());
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

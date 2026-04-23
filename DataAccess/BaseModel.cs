@@ -1,13 +1,10 @@
 ﻿using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-
 namespace DataAccess
 {
-    public class BaseModel<TEntity> where TEntity : class, new()
+    public class BaseModel<TEntity> : IBaseModel<TEntity> where TEntity : class, new()
     {
         /// <summary>
         /// Contexto

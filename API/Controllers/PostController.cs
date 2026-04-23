@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Business;
 using Microsoft.AspNetCore.Mvc;
 using PostEntity = DataAccess.Data.Post;
@@ -9,9 +8,9 @@ namespace API.Controllers.Post
     [Route("[controller]")]
     public class PostController : ControllerBase
     {
-        private readonly BaseService<PostEntity> _postService;
+        private readonly IPostService _postService;
 
-        public PostController(BaseService<PostEntity> postService)
+        public PostController(IPostService postService)
         {
             _postService = postService;
         }
@@ -19,7 +18,7 @@ namespace API.Controllers.Post
         [HttpGet]
         public IEnumerable<PostEntity> GetAll()
         {
-            return _postService.GetAll().ToList();
+            return _postService.GetAll();
         }
 
         [HttpPost]

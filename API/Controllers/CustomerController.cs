@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Business;
 using Microsoft.AspNetCore.Mvc;
 using CustomerEntity = DataAccess.Data.Customer;
@@ -9,9 +8,9 @@ namespace API.Controllers.Customer
     [Route("[controller]")]
     public class CustomerController : ControllerBase
     {
-        private readonly BaseService<CustomerEntity> _customerService;
+        private readonly ICustomerService _customerService;
 
-        public CustomerController(BaseService<CustomerEntity> customerService)
+        public CustomerController(ICustomerService customerService)
         {
             _customerService = customerService;
         }
@@ -19,7 +18,7 @@ namespace API.Controllers.Customer
         [HttpGet]
         public IEnumerable<CustomerEntity> GetAll()
         {
-            return _customerService.GetAll().ToList();
+            return _customerService.GetAll();
         }
 
         [HttpPost]

@@ -1,18 +1,16 @@
-﻿using DataAccess;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using DataAccess;
 
 namespace Business
 {
-    public class BaseService<TEntity> where TEntity : class, new()
+    public class BaseService<TEntity> : IBaseService<TEntity> where TEntity : class, new()
     {
-        protected BaseModel<TEntity> _BaseModel;
+        protected IBaseModel<TEntity> _baseModel;
 
-        public BaseService(BaseModel<TEntity> baseModel)
+        public BaseService(IBaseModel<TEntity> baseModel)
         {
-            _BaseModel = baseModel;
+            _baseModel = baseModel;
         }
 
         #region Repository
@@ -21,9 +19,9 @@ namespace Business
         /// <summary>
         /// Consulta todas las entidades
         /// </summary>
-        public virtual IQueryable<TEntity> GetAll()
+        public virtual IEnumerable<TEntity> GetAll()
         {
-            return _BaseModel.GetAll;
+            return _baseModel.GetAll.ToList();
         }
 
         /// <summary>
@@ -33,10 +31,8 @@ namespace Business
         /// <returns></returns>
         public virtual TEntity Create(TEntity entity)
         {
-
-            return _BaseModel.Create(entity);
+            return _baseModel.Create(entity);
         }
-
 
         /// <summary>
         /// Actualiza la entidad (GUARDA)
@@ -47,10 +43,9 @@ namespace Business
         /// <returns></returns>
         public virtual TEntity Update(object id, TEntity editedEntity, out bool changed)
         {
-            TEntity originalEntity = _BaseModel.FindById(id);
-            return _BaseModel.Update(editedEntity, originalEntity, out changed);
+            TEntity originalEntity = _baseModel.FindById(id);
+            return _baseModel.Update(editedEntity, originalEntity, out changed);
         }
-
 
         /// <summary>
         /// Elimina una entidad (Guarda)
@@ -59,7 +54,7 @@ namespace Business
         /// <returns></returns>
         public virtual TEntity Delete(TEntity entity)
         {
-            return _BaseModel.Delete(entity);
+            return _baseModel.Delete(entity);
         }
 
         /// <summary>
@@ -67,10 +62,8 @@ namespace Business
         /// </summary>
         public virtual void SaveChanges()
         {
-            _BaseModel.SaveChanges();
+            _baseModel.SaveChanges();
         }
         #endregion
-
-
     }
 }
